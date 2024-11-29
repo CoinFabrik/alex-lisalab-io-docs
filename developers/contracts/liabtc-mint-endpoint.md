@@ -3,15 +3,42 @@
 - Source code: `./contracts/liabtc/liabtc-mint-endpoint.clar`
 <!-- - [Deployed contract](link-to-explorer) -->
 
-Façade for [`xlink-staking`](xlink-staking.md) contract designed to handle the lifecycle of the `LiaBTC` rebasing token (mint, burn and rebase operations).
+Façade for [`xlink-staking`][1] contract designed to handle the lifecycle of the `LiaBTC` rebasing token (mint, burn and rebase operations).
 
 ## Rebase
 
 This contract manages the LiaBTC token reserve through the [`rebase`](#rebase) public function. Burn and mint operations perfom a rebase every time they are executed. However, `rebase` can be called permissionlessly by any principal.
 
-The rebasing mechanism is implemented via the "shares" concept. In this case, the LiaBTC reserve reperesents the value in `aBTC` of the staking shares held by the `liabtc-mint-endpoint`, as tracked by the [`xlink-staking`](xlink-staking.md) contract.
+The rebasing mechanism is implemented via the "shares" concept. In this case, the LiaBTC reserve reperesents the value in `aBTC` of the staking shares held by the `liabtc-mint-endpoint`, as tracked by the [`xlink-staking`][1] contract.
 
 For a detailed overview of the LiaBTC liquid token and its rebasing mechanism, see the [`token-liabtc`](token-liabtc.md) contract documentation.
+
+## Mint
+
+The mint operation consists of two main actions:
+
+- User transfers `aBTC` to stake in the liquid pool.
+- User receives `LiaBTC` in exchange, maintaining a 1:1 ratio (1 `aBTC` = 1 `LiaBTC`).
+
+The `liabtc-mint-endpoint` contract acts as an `aBTC` staker within the [`xlink-staking`][1] contract. It serves as an abstraction layer, simplifying interactions between `LiaBTC` token holders and the liquid staking pool management provided by [`xlink-staking`][1].  
+
+When a user mints `LiaBTC`, the transferred `aBTC` is sent to the XLink staking manager, which tracks the liquid staking status (shares and stake balances) and emits an event.
+
+<!-- The `liabtc-mint-endpoint` is an `aBTC` staker in the [`xlink-staking`][1] contract, acting as a layer of abstraction between LiaBTC token holders and the liquid staking pool management handled by [`xlink-staking`][1].
+
+When a user mints `LiaBTC`, the underlying `aBTC` is transferred to the XLink staking manager, which tracks the liquid staking status (shares and stake amounts). -->
+
+```mermaid
+flowchart LR
+    User --aBTC--> liabtc-mint-endpoint
+    liabtc-mint-endpoint --LiaBTC--> User
+    liabtc-mint-endpoint --aBTC--> xlink-staking
+    xlink-staking -.-> A@{ shape: braces, label: "Updates storage\n and emits event" }
+```
+
+## Burn
+
+TODO:
 
 ## Storage
 
@@ -91,13 +118,65 @@ Updates the LiaBTC token reserve by recalculating its value based on the staking
 
 #### `mint`
 
+Mints `LiaBTC` to the user (defined as `sender` within the contract) in exchange for `aBTC` at a 1:1 ratio. The provided `aBTC` is staked in the XLink staking manager by the `liabtc-mint-endpoint` on behalf of the user.
+
+The `message` and `signature-packs` parameters serve as inputs to the [`xlink-staking::stake`][2] function. They are part of the XLink liquid staking pool's reward accrual mechanism, which operates permissionlessly and relies on validators.
+
 ##### Parameters
 
-| Name   | Type        |
-| ------ | ----------- |
-| `amount` | `uint` |
-| `message` | `{ token: principal, accrued-rewards: uint, update-block: uint }` |
+| Name              | Type                                                                            |
+| ----------------- | ------------------------------------------------------------------------------- |
+| `amount`          | `uint`                                                                          |
+| `message`         | `{ token: principal, accrued-rewards: uint, update-block: uint }`               |
 | `signature-packs` | `list 100 { signer: principal, message-hash: (buff 32), signature: (buff 65) }` |
+
+#### `request-burn`
+
+TODO:
+
+##### Parameters
+
+| Name              | Type                                                                            |
+| ----------------- | ------------------------------------------------------------------------------- |
+| `amount`          | `uint`                                                                          |
+| `message`         | `{ token: principal, accrued-rewards: uint, update-block: uint }`               |
+| `signature-packs` | `list 100 { signer: principal, message-hash: (buff 32), signature: (buff 65) }` |
+
+#### `revoke-burn`
+
+TODO:
+
+##### Parameters
+
+| Name              | Type                                                                            |
+| ----------------- | ------------------------------------------------------------------------------- |
+| `request-id`      | `uint`                                                                          |
+| `message`         | `{ token: principal, accrued-rewards: uint, update-block: uint }`               |
+| `signature-packs` | `list 100 { signer: principal, message-hash: (buff 32), signature: (buff 65) }` |
+
+#### `finalize-burn`
+
+TODO:
+
+##### Parameters
+
+| Name         | Type   |
+| ------------ | ------ |
+| `request-id` | `uint` |
+
+#### `finalize-burn-many`
+
+TODO:
+
+##### Parameters
+
+| Name          | Type             |
+| ------------- | ---------------- |
+| `request-ids` | `list 1000 uint` |
+
+### Governance
+
+TODO:
 
 ### Supporting features
 
@@ -197,24 +276,16 @@ Returns the [`burn-delay`](#burn-delay) variable.
 
 Getter for testing purposes. If mainnet, returns the `burn-block-height`.
 
-### Relevant internal functions
-
-_La idea de esta sección es mencionar las funciones privadas que son relevantes. Si las mencionamos, es porque nos parece importante describirlas._
-
-#### `refund`
-
-_Esto se documenta como cualquier otra función. Puede ser importante mencionar los casos en los que se llama. Ej: todas las `cross-*` usan esta función para hacer los refunds._
-
-##### Parameters
-
 ## Contract calls
 
-- `liabtc-mint-registry`: TODO:
-- `xlink-staking`: TODO:
-- `token-liabtc`: TODO:
-- `'SP2XD7417HGPRTREMKF748VNEQPDRR0RMANB7X1NK.token-abtc`: TODO:
+TODO:
+
+- `liabtc-mint-registry`:
+- `xlink-staking`:
+- `token-liabtc`:
+- `'SP2XD7417HGPRTREMKF748VNEQPDRR0RMANB7X1NK.token-abtc`:
 <!-- TODO: LiaBTC DAO will switch to LISA's when going live. -->
-- `'SP2XD7417HGPRTREMKF748VNEQPDRR0RMANB7X1NK.executor-dao`: TODO:
+- `'SP2XD7417HGPRTREMKF748VNEQPDRR0RMANB7X1NK.executor-dao`:
 
 ## Errors
 
@@ -225,5 +296,8 @@ _Esto se documenta como cualquier otra función. Puede ser importante mencionar 
 | `err-request-pending`              | `(err u7006)` |
 | `err-request-finalized-or-revoked` | `(err u7007)` |
 | `err-not-whitelisted`              | `(err u7008)` |
+
+[1]: xlink-staking.md
+[2]: xlink-staking.md#stake
 
 <!-- Documentation Contract Template v0.1.0 -->
