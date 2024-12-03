@@ -23,7 +23,7 @@ The following functions are guarded by the [`is-dao-or-extension`](#is-dao-or-ex
 
 #### `set-burn-request`
 
-Creates or modifies burn requests in the [`burn-requests`](#burn-requests) map as specified in the `details`. It is called by the functions [`request-burn`](liabtc-mint-endpoint.md#request-burn), [`revoke-burn`](liabtc-mint-endpoint.md#revoke-burn) and [`finalize-burn`](liabtc-mint-endpoint.md#finalize-burn) in the [`liabtc-mint-endpoint`][mint] contract.
+Creates or modifies burn requests in the [`burn-requests`](#burn-requests) map as specified in the `details` parameter. It is called by the functions [`request-burn`](liabtc-mint-endpoint.md#request-burn), [`revoke-burn`](liabtc-mint-endpoint.md#revoke-burn) and [`finalize-burn`](liabtc-mint-endpoint.md#finalize-burn) in the [`liabtc-mint-endpoint`][mint] contract.
 
 New requests are created by passing `u0` as the `request-id` parameter. On each request creation, the [`burn-request-nonce`](#burn-request-nonce) variable is incremented by one, resulting in the id of the new request.
 
@@ -80,13 +80,11 @@ Indicates the `request-id` of the last burn request created. This variable can o
 
 ### `burn-requests`
 
-Map that stores the burn requests used by the [`liabtc-mint-endpoint`][mint].
-
 | Data | Type                                                                                   |
 | ---- | -------------------------------------------------------------------------------------- |
 | Map  | `uint { requested-by: principal, amount: uint, requested-at: uint, status: (buff 1) }` |
 
-<!-- Descripción de la variable/mapa y qué representa dentro del contrato. Si se quiere, agregar el valor al momento del deploy. -->
+Map that stores the burn requests used by the [`liabtc-mint-endpoint`][mint].
 
 ### Relevant constants
 
@@ -116,7 +114,7 @@ Burn request revoked status.
 
 ## Contract calls
 
-- `<sip-010-trait>`: <!-- Description. -->
+- `<sip-010-trait>`: Interaction with potentially any contract implementing the [official SIP-010][sip010] occurs when the [`transfer`](#transfer) function is called.
 
 <!-- TODO: LiaBTC DAO will switch to LISA's DAO when going live. -->
 - `'SP2XD7417HGPRTREMKF748VNEQPDRR0RMANB7X1NK.executor-dao`: This contract is exclusively called by the [`is-dao-or-extension`](#is-dao-or-extension) function for authorizing governance operations.
@@ -129,4 +127,5 @@ Burn request revoked status.
 | `err-unknown-request-id` | `(err u1008)` |
 
 [mint]: liabtc-mint-endpoint.md
-[^1]: The token just needs to comply with the [official SIP-010](https://github.com/stacksgov/sips/blob/main/sips/sip-010/sip-010-fungible-token-standard.md).
+[sip010]: https://github.com/stacksgov/sips/blob/main/sips/sip-010/sip-010-fungible-token-standard.md
+[^1]: The token just needs to comply with the [official SIP-010][sip010].
