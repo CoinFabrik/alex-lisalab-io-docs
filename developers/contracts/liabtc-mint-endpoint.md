@@ -11,10 +11,10 @@ The `liabtc-mint-endpoint` contract acts as single `aBTC` staker within the [`xl
 
 The mint operation consists of two main actions:
 
-- User transfers `aBTC` to stake in the liquid pool.
-- User receives `LiaBTC` in exchange, maintaining a 1:1 ratio (1 `aBTC` = 1 `LiaBTC`).
+- User transfers `aBTC` to be staked in the liquid pool.
+- User receives `LiaBTC` tokens in exchange at a 1:1 ratio (1 `aBTC` = 1 `LiaBTC`).
 
-When a user mints `LiaBTC`, the underlying `aBTC` is transferred to the Staking Manager, which tracks the liquid staking status (shares and stake balances) and emits an event.
+When a user mints `LiaBTC`, the underlying `aBTC` is transferred to the Staking Manager, which stores the funds, tracks the liquid staking status (including shares and stake balances) and emits an event.
 
 ```mermaid
 flowchart LR
@@ -27,29 +27,40 @@ flowchart LR
 
 ## Burn
 
-The burn operation is by which users can get back their `LiaBTC` and obtain `aBTC` in return with a 1:1 ratio. The burn operations are managed by the `liabtc-mint-registry` and has a waiting before `aBTC` are finally withdrawn.
+The burn operation (or unstake) allows users to withdraw their `aBTC` from the liquid staking pool in exchange for burning `LiaBTC` tokens at a 1:1 ratio. These operations are managed by the [`liabtc-mint-registry`][4] and involve a waiting period between the burn request and the final withdrawal of `aBTC`.
 
 ### Request
 
-User requests the burn of a certain amount of `LiaBTC`. In this step, `LiaBTC` tokens are burned and a burn request is created by the registry with a certain `request-id` and a [`PENDING`](#pending) status. The underlying `aBTC` are sent from the Staking Manager ulimately to the registry, which will hold the funds until finalization or revoke.
+User initiates the request to unstake a specific amount of `aBTC`. During this step:  
+
+- That same amount of `LiaBTC` tokens are burned from the user wallet.  
+- A burn request is created in the registry with a unique `request-id` and a [`PENDING`](#pending) status.  
+- The `aBTC` are sent from the Staking Manager to the registry, which will hold the funds until the request is either finalized or revoked.
 
 ### Finalize
 
-The user (or any other principal) can finalize the request when the [`burn-delay`](#burn-delay) period has passed (typically 1,000 Bitcoin blocks) and the corresponding `aBTC` are transferred to the requestor. The request status is swtiched to [`FINALIZED`](#finalized).
+Once the [`burn-delay`](#burn-delay) period (typically 1,000 Bitcoin blocks) has passed, the user or any other principal can finalize the request. On finalization:  
+
+- The corresponding `aBTC` is transferred from the registry to the requestor, completing the unstaking process.  
+- The request status is updated to [`FINALIZED`](#finalized).  
 
 ### Revoke
 
-Burn requests can be revoked by the requestor. This operation transfers back the `aBTC` to the user and perform a `mint` within the same transaction. The resulting state is the requestor holding the same amount of `LiaBTC` that had before requesting. The request status is set to `REVOKE`.
+Burn requests can be revoked by the requestor at any time before it is finalized. When revoke:
+
+- The corresponding `aBTC` is returned to the user.  
+- A `mint` operation is executed in the same transaction, restoring the user's original amount of `LiaBTC`.  
+- The request status is updated to `REVOKE`.  
 
 ## Rebase
 
-This contract manages the `LiaBTC` token reserve through the [`rebase`](#rebase) public function. Burn and mint operations perfom a rebase every time they are executed. However, `rebase` can be called permissionlessly by any principal.
+This contract manages the `LiaBTC` token reserve through the [`rebase`](#rebase) public function. Mint and burn operations perfom a rebase every time they are executed. However, `rebase` can be called permissionlessly by any principal.
 
-The rebasing mechanism is implemented via the "shares" concept. In this case, the `LiaBTC` reserve reperesents the value in `aBTC` of the staking shares held by the `liabtc-mint-endpoint`, as tracked by the [`xlink-staking`][1] contract.
+The rebasing mechanism is implemented via the "shares" concept. The `LiaBTC` reserve reperesents the value in `aBTC` of the staking shares held by the `liabtc-mint-endpoint`, as tracked by the XLink Staking Manager contract.
 
-The staking shares held by the `liabtc-mint-endpoint` are updated whenever a user mints or burns `LiaBTC`. The value of these shares in `aBTC` increases through the reinvestment of accrued staking rewards, which are restaked to grow the reserve over time.
+The staking shares held by the `liabtc-mint-endpoint` are adjusted whenever users mint or burn `LiaBTC`. Over time, the value of these shares in `aBTC` grows as accrued staking rewards are reinvested, increasing the reserve.
 
-For a detailed overview of the `LiaBTC` liquid token, see the [`token-liabtc`](token-liabtc.md) contract documentation.
+For a detailed overview of the `LiaBTC` liquid token, refer to the [`token-liabtc`](token-liabtc.md) contract documentation.
 
 ## Features
 
@@ -57,11 +68,11 @@ For a detailed overview of the `LiaBTC` liquid token, see the [`token-liabtc`](t
 
 #### `rebase`
 
-Updates the LiaBTC token reserve by recalculating its value based on the staking shares held by the `liabtc-mint-endpoint` contract.
+Updates the `LiaBTC` token reserve by recalculating its value based on the staking shares held by the `liabtc-mint-endpoint` contract.
 
 #### `mint`
 
-Mints `LiaBTC` to the user (defined as `sender` within the contract) in exchange for `aBTC` at a 1:1 ratio. The provided `aBTC` is staked in the XLink staking manager by the `liabtc-mint-endpoint` on behalf of the user.
+Mints `LiaBTC` to the caller (defined as `sender` within the contract) in exchange for `aBTC` at a 1:1 ratio. The provided `aBTC` is staked in the XLink Staking Manager by the `liabtc-mint-endpoint` on behalf of the user.
 
 The `message` and `signature-packs` parameters serve as inputs to the [`xlink-staking::stake`][2] function. They are part of the XLink liquid staking pool's reward accrual mechanism, which operates permissionlessly and relies on validators.
 
@@ -79,7 +90,7 @@ Initiates the burn procedure for a certain amount of `LiaBTC`. Several actions a
 
 - `LiaBTC` amount is burned from the user wallet.
 - The amount of `aBTC` is unstaked from the Staking Manager.
-- The unstaked `aBTC` is transferred from the `xlink-staking` to the `liabtc-mint-endpoint` and then to the `liabtc-mint-registry` to be holded until finalization o revoke.
+- The unstaked `aBTC` is transferred from the `xlink-staking` to the `liabtc-mint-endpoint` and then to the[`liabtc-mint-registry`][4] to be holded until finalization o revoke.
 - A request with `PENDING` status is created on the registry.
 
 As with `mint`, the `message` and `signature-packs` parameters serve as inputs to the [`xlink-staking::unstake`][3] function.
@@ -94,7 +105,7 @@ As with `mint`, the `message` and `signature-packs` parameters serve as inputs t
 
 #### `revoke-burn`
 
-Revokes a burn request. Only the requestor (`requested-by` field of the request) can call this function. Funds are returned back to user as in `finalize-request` with the difference that the `mint` function is invoked to stake the amount again and mint `LiaBTC` back to the user. Request status is set to `REVOKED`.
+Revokes a burn request. Only the requestor (`requested-by` field of the request) can call this function. The registry returns the funds back to user as in `finalize-request`, with the key difference that the [`mint`](#mint) function is invoked (with the user as `sender`) to restake the `aBTC` and mint the `LiaBTC` back to the user. Request status is updated to `REVOKED`.
 
 ##### Parameters
 
@@ -106,7 +117,7 @@ Revokes a burn request. Only the requestor (`requested-by` field of the request)
 
 #### `finalize-burn`
 
-Finalizes a burn request by transferring the `aBTC` funds from the registry to the user (`requested-by` field of the request). Request is set as `FINALIZED`. Anyone can call.
+Finalizes a burn request by transferring the `aBTC` from the registry to the user (`requested-by` field of the request). Request is set as `FINALIZED`. Anyone can call.
 
 ##### Parameters
 
@@ -316,7 +327,7 @@ Indicates the operational status for the burn (unstake) operations.
 | -------- | ------ |
 | Variable | `uint` |
 
-Indicates waiting period for a burn request, measured in Bitcoin blocks (burn chain). It represents the time users must wait between initiating burn request and being able to finalize it.
+Indicates the waiting period for a burn request, measured in Bitcoin blocks (burn chain). It represents the time users must wait between initiating burn request and being able to finalize it.
 
 ### `use-whitelist`
 
@@ -362,12 +373,16 @@ Burn request revoked status.
 
 ## Contract calls
 
-- `xlink-staking`: The Staking Manager is called in the core operations of the contract: every time a user mints/burns, the corresponding stake/unstake operations are delegated to this contract. Additionally, the Staking Manager is essential to perfom the `LiaBTC` rebase by retrieving the value of `aBTC` held by the `liabtc-mint-endpoint` as a staker within the protocol.
-- `liabtc-mint-registry`: Calls to the registry are performed to handle burn requests and funds management when burning/unstaking.
-- `token-liabtc`: This contract is called to perform three essential actiosn: rebase, mint and burn.
-- `'SP2XD7417HGPRTREMKF748VNEQPDRR0RMANB7X1NK.token-abtc`: As the token that values `LiaBTC`, calls to this contract are to perform transfers and indicate the token that is being staked in the Staking Manager.
+- [`xlink-staking`][1]: Interactions with the Staking Manager are present in the contract's core opertions. It is called during every mint or burn operation to handle the corresponding stake or unstake actions. Additionally, the Staking Manager is essential to perfom the `LiaBTC` rebase by retrieving the value of `aBTC` held by the `liabtc-mint-endpoint` as a staker within the protocol.
+
+- [`liabtc-mint-registry`][4]: The registry is called to manage burn requests and handle funds during the burning/unstaking process.
+
+- `token-liabtc`: This contract is called to perform three essential actions: rebase, mint and burn.
+
+- `'SP2XD7417HGPRTREMKF748VNEQPDRR0RMANB7X1NK.token-abtc`: As the underlying token that backs `LiaBTC`, this contract is called for transfers and to specify the token being staked in the Staking Manager.
+
 <!-- TODO: LiaBTC DAO will switch to LISA's DAO when going live. -->
-- `'SP2XD7417HGPRTREMKF748VNEQPDRR0RMANB7X1NK.executor-dao`: Solely used by [`is-dao-or-extension`](#is-dao-or-extension) function for authorization of governance operations.
+- `'SP2XD7417HGPRTREMKF748VNEQPDRR0RMANB7X1NK.executor-dao`: This contract is exclusively called by the [`is-dao-or-extension`](#is-dao-or-extension) function for authorizing governance operations.
 
 ## Errors
 
@@ -382,5 +397,6 @@ Burn request revoked status.
 [1]: xlink-staking.md
 [2]: xlink-staking.md#stake
 [3]: xlink-staking.md#unstake
+[4]: liabtc-mint-registry.md
 
 <!-- Documentation Contract Template v0.1.1 -->
