@@ -205,7 +205,7 @@ Sets the [`burn-delay`](#burn-delay) variable.
 
 #### `is-dao-or-extension`
 
-This standard protocol function checks whether the `contract-caller` is an enabled extension within the DAO or the `tx-sender` is the DAO itself (proposal execution scenario). The enabled extension check is delegated to the LISA's `executor-dao` contract.
+Standard protocol function to check whether the `contract-caller` is an enabled extension within the DAO or the `tx-sender` is the DAO itself (proposal execution scenario). The enabled extension check is delegated to the LISA's `executor-dao` contract.
 
 #### `is-whitelisted-or-mint-for-all`
 
