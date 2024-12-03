@@ -1,6 +1,6 @@
 # liabtc-mint-endpoint
 
-- Source code: `xlink-network/xlink-dao/contracts/liabtc/liabtc-mint-endpoint.clar`
+- Location: `xlink-dao/contracts/liabtc/liabtc-mint-endpoint.clar`
 <!-- - [Deployed contract](link-to-explorer) -->
 
 Façade for [`xlink-staking`][1] contract designed to handle the lifecycle of the `LiaBTC` rebasing token (mint, burn and rebase operations).
@@ -50,74 +50,6 @@ The rebasing mechanism is implemented via the "shares" concept. In this case, th
 The staking shares held by the `liabtc-mint-endpoint` are updated whenever a user mints or burns `LiaBTC`. The value of these shares in `aBTC` increases through the reinvestment of accrued staking rewards, which are restaked to grow the reserve over time.
 
 For a detailed overview of the `LiaBTC` liquid token, see the [`token-liabtc`](token-liabtc.md) contract documentation.
-
-## Storage
-
-### `mint-paused`
-
-| Data     | Type   |
-| -------- | ------ |
-| Variable | `bool` |
-
-Indicates the operational status for the mint (stake) operations.
-
-### `burn-paused`
-
-| Data     | Type   |
-| -------- | ------ |
-| Variable | `bool` |
-
-Indicates the operational status for the burn (unstake) operations.
-
-### `burn-delay`
-
-| Data     | Type   |
-| -------- | ------ |
-| Variable | `uint` |
-
-Indicates waiting period for a burn request, measured in Bitcoin blocks (burn chain). It represents the time users must wait between initiating burn request and being able to finalize it.
-
-### `use-whitelist`
-
-| Data     | Type   |
-| -------- | ------ |
-| Variable | `bool` |
-
-Indicates whether the whitelist mechanism is currently active. The whitelist applies to mint (stake) operations but not to burn (unstake) ones.
-
-### `whitelisted`
-
-| Data | Type             |
-| ---- | ---------------- |
-| Map  | `principal bool` |
-
-Maintains a mapping of users (`principal`) to their whitelist status (`bool`).
-
-### Relevant constants
-
-#### `PENDING`
-
-| Type     | Value  |
-| -------- | ------ |
-| `buff 1` | `0x00` |
-
-Burn request pending status. When created, burn requests start with this status.
-
-#### `FINALIZED`
-
-| Type     | Value  |
-| -------- | ------ |
-| `buff 1` | `0x01` |
-
-Burn request finalize status.
-
-#### `REVOKED`
-
-| Type     | Value  |
-| -------- | ------ |
-| `buff 1` | `0x02` |
-
-Burn request revoked status.
 
 ## Features
 
@@ -359,6 +291,74 @@ Returns the [`burn-delay`](#burn-delay) variable.
 #### `get-current-bitcoin-block`
 
 Getter for testing purposes. If mainnet, returns the `burn-block-height`.
+
+## Storage
+
+### `mint-paused`
+
+| Data     | Type   |
+| -------- | ------ |
+| Variable | `bool` |
+
+Indicates the operational status for the mint (stake) operations.
+
+### `burn-paused`
+
+| Data     | Type   |
+| -------- | ------ |
+| Variable | `bool` |
+
+Indicates the operational status for the burn (unstake) operations.
+
+### `burn-delay`
+
+| Data     | Type   |
+| -------- | ------ |
+| Variable | `uint` |
+
+Indicates waiting period for a burn request, measured in Bitcoin blocks (burn chain). It represents the time users must wait between initiating burn request and being able to finalize it.
+
+### `use-whitelist`
+
+| Data     | Type   |
+| -------- | ------ |
+| Variable | `bool` |
+
+Indicates whether the whitelist mechanism is currently active. The whitelist applies to mint (stake) operations but not to burn (unstake) ones.
+
+### `whitelisted`
+
+| Data | Type             |
+| ---- | ---------------- |
+| Map  | `principal bool` |
+
+Maintains a mapping of users (`principal`) to their whitelist status (`bool`).
+
+### Relevant constants
+
+#### `PENDING`
+
+| Type     | Value  |
+| -------- | ------ |
+| `buff 1` | `0x00` |
+
+Burn request pending status. When created, burn requests start with this status.
+
+#### `FINALIZED`
+
+| Type     | Value  |
+| -------- | ------ |
+| `buff 1` | `0x01` |
+
+Burn request finalize status.
+
+#### `REVOKED`
+
+| Type     | Value  |
+| -------- | ------ |
+| `buff 1` | `0x02` |
+
+Burn request revoked status.
 
 ## Contract calls
 
