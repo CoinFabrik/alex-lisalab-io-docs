@@ -126,6 +126,6 @@ Burn request revoked status.
 | `err-unknown-request-id` | `(err u1008)` |
 
 [mint]: liabtc-mint-endpoint.md
-[sip010]: https://github.com/stacksgov/sips/blob/main/sips/sip-010/sip-010-fungible-token-standard.md
+[sip010]: https://github.com/stacksgov/sips/blob/main/sips/sip-010/sip-010-fungible-token-standard.mdsip-010-fungible-token-standard.md
 
 [^1]: The token just needs to comply with the [official SIP-010][sip010].

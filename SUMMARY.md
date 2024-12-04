@@ -80,4 +80,4 @@
   * [liabtc-mint-endpoint](developers/contracts/liabtc-mint-endpoint.md)
   * [liabtc-mint-registry](developers/contracts/liabtc-mint-registry.md)
   * [token-liabtc](developers/contracts/token-liabtc.md)
-  <!-- * [token-vliabtc](developers/contracts/token-vliabtc.md) -->
+  * [token-vliabtc](developers/contracts/token-vliabtc.md)
