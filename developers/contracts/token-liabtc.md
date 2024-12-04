@@ -1,37 +1,48 @@
 # token-liabtc
 
-Implementation of the `LiaBTC` SIP-010 rebasing token, representing staked `aBTC`. The underlying Bitcoin that backs these `aBTC` tokens is staked at Babylon. Tokens are minted when `aBTC` is submitted to the protocol and burned upon redemption.
+## What is LiaBTC?
 
-The sole public feature is transferring `LiaBTC` tokens from a sender to a specified `recipient`. For authorization, the sender must either be the `tx-sender` or the `contract-caller`.
+The `LiaBTC` token is a [SIP-010][sip010] compliant rebasing token that represents staked `aBTC`. The underlying Bitcoin (`BTC`) backing these `aBTC` tokens is staked externally. This staking process uses the [XLink Staking Manager][sm] contract to track on-chain status and inform staking actions, the [Babylon](https://babylonlabs.io/) Bitcoin staking platform for execution, and [Cobo](https://www.cobo.com/) as the finality provider.
 
-## Rebase Mechanism
+The lifecycle of the `LiaBTC` token invoves minting when `aBTC` is submitted for staking and burning upon unstaking. When users stake `aBTC` via LISA, they receive `LiaBTC` at a 1:1 ratio.
 
-The rebasing mechanism is implemented via the "shares" concept. The protocol tracks and stores each user's share of the total reserve. The token balance of a specific principal $p$ is calculated following:
+## Rebase mechanism
+
+The rebasing mechanism is implemented via the "shares" concept. The protocol tracks and stores each user's share of the reserve. The token balance of a specific user is calculated according to the following equation.
 
 $$
-\begin{equation} \textrm{Balance}^{(p)} = \frac{\textrm{Shares}^{(p)}}{\textrm{Total Shares}} \; \cdot \:  \textrm{Reserve} \end{equation}
+\textrm{User Balance} = \frac{\textrm{User Shares}}{\textrm{Total Shares}} \; \cdot \:  \textrm{Reserve}
 $$
 
 Where:
 
-- **Reserve** is the total BTC managed by the protocol, composed by
-  - BTC staked at Babylon;
-  - staking rewards already converted to BTC but not yet staked; and
-  - newly deposited BTC but not yet staked.
-- **Shares** represent the user's portion of the total reserve. Every time a user deposits `aBTC` to the protocol, it is converted to shares and added to the current user shares amount. Shares increase when users deposit `aBTC` and decrease when they redeem.
-- **Total Shares** is the sum of all shares held by all token holders.
+- **Reserve** is the current total value of `aBTC` staked, backed by the `BTC` staked at Babylon and their corresponding staking rewards which were converted to `BTC` and restaked.
 
-The reserve in the contract it is tracked by the `reserve` variable, which is updated externally. Note that token balances of all holders adjust when the reserve changes without an explicit token transfers.
+- **User Shares** represent the user's portion of the total reserve. Every time a user stakes `aBTC`, the equivalent value in shares is calculated and minted to the user's shares balance. Shares increase when users deposit `aBTC` and decrease when they redeem.
 
-<!-- However, the rebalancing mechanism is transparent from a token holder perspective rather than their balance will change due to the rebalance adjustments. -->
+- **Total Shares** is the sum of all shares held by all `LiaBTC` token holders.
 
-All interface amounts are in token units. Both shares and tokens use the same number of decimals, defined by `token-decimals`.
+By holding shares, users hold a portion of the total reserve. If the reserve changes, each balance does as well and without involving explicit token transfer. Anyway, this rebase and shares mechanism is transparent from a token holder perspective rather the auto-adjustment of the balance.
 
-| Name              | Type   |
-| ----------------- | ------ |
-| `amount`          | `uint` |
-| `message`         | `a`    |
-| `signature-packs` | `b`    |
+The reserve in the contract it is tracked by the [`reserve`](#reserve) variable, which is updated externally, typically by the [`liabtc-mint-endpoint::rebase`][rebasef] function.
+
+## Balances
+
+The `LiaBTC` balance of each user, accessible via the [`get-balance`](#get-balance) function, is automatically adjusted on each rebase, without requiring a token transfer. In a scenario where the user do not perform any staking movements, their balance will increase over time as staking rewards are reinjected into the staking protocol.
+
+On the other hand, the shares balance, which can be obtained through the [`get-share`](#get-share) function, accounts for the portion of the total `aBTC` reserve that belongs to the user. Shares behave like a regular fungible token: balances can only changes with transfers, mints or burns.
+
+Users can freely use `LiaBTC` and its public interface in the same way as they would with any other token.
+
+## Units
+
+Except for some specific cases, all interface functions' input and output amounts are in `LiaBTC` token units. Those special cases are for the functions:
+
+- [`get-share`](#get-share): returns amount in shares.
+- [`get-shares-to-tokens`](#get-shares-to-tokens): receives shares and returns tokens.
+- [`get-tokens-to-shares`](#get-tokens-to-shares): receives tokens and returns shares.
+
+Both shares and tokens use the same number of decimals, defined by `token-decimals`.
 
 ## Features
 
@@ -168,7 +179,7 @@ Standard protocol function to check whether the `contract-caller` is an enabled 
 
 #### `get-tokens-to-shares`
 
-TODO:
+Converts a specified `LiaBTC` `amount` into its equivalent shares representation.
 
 ##### Parameters
 
@@ -178,7 +189,7 @@ TODO:
 
 #### `get-shares-to-tokens`
 
-TODO:
+Converts a specified amount of `shares` into its equivalent value in `LiaBTC` tokens.
 
 ##### Parameters
 
@@ -248,24 +259,24 @@ Tracks the reserve of `LiaBTC`. It represents the current total value of `aBTC` 
 
 ### `token-name`
 
-| Data     | Type   |
-| -------- | ------ |
+| Data     | Type              |
+| -------- | ----------------- |
 | Variable | `string-ascii 32` |
 
 Intial value is `"LiaBTC"`.
 
 ### `token-symbol`
 
-| Data     | Type   |
-| -------- | ------ |
+| Data     | Type              |
+| -------- | ----------------- |
 | Variable | `string-ascii 10` |
 
 Intial value is `"LiaBTC"`.
 
 ### `token-uri`
 
-| Data     | Type   |
-| -------- | ------ |
+| Data     | Type                         |
+| -------- | ---------------------------- |
 | Variable | `optional (string-utf8 256)` |
 
 Initial value is `some u"https://cdn.alexlab.co/metadata/token-liabtc.json"`.
@@ -281,6 +292,7 @@ Initial value is `u8`.
 ## Contract calls
 
 <!-- TODO: LiaBTC DAO will switch to LISA's DAO when going live. -->
+
 - `'SP2XD7417HGPRTREMKF748VNEQPDRR0RMANB7X1NK.executor-dao`: This contract is exclusively called by the [`is-dao-or-extension`](#is-dao-or-extension) function for authorizing governance operations.
 
 ## Errors
@@ -291,3 +303,6 @@ Initial value is `u8`.
 | `err-invalid-amount` | `(err u3001)` |
 
 [mint]: liabtc-mint-endpoint.md
+[rebasef]: liabtc-mint-endpoint.md#rebase-1
+[sip010]: https://github.com/stacksgov/sips/blob/main/sips/sip-010/sip-010-fungible-token-standard.md
+[sm]: xlink-staking.md
