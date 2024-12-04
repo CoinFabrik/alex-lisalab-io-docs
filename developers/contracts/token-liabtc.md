@@ -2,13 +2,17 @@
 
 ## What is LiaBTC?
 
-The `LiaBTC` token is a [SIP-010][sip010] compliant rebasing token that represents staked `aBTC`. The underlying Bitcoin (`BTC`) backing these `aBTC` tokens is staked externally. This staking process uses the [XLink Staking Manager][sm] contract to track on-chain status and inform staking actions, the [Babylon](https://babylonlabs.io/) Bitcoin staking platform for execution, and [Cobo](https://www.cobo.com/) as the finality provider.
+The `LiaBTC` token is a [SIP-010][sip010] compliant rebasing token that represents staked `aBTC`. The underlying Bitcoin backing these `aBTC` tokens is staked externally.
+
+This particular staking process uses the [XLink Staking Manager][sm] contract to track on-chain status and inform staking actions, the [Babylon](https://babylonlabs.io/) Bitcoin staking platform for execution and [Cobo](https://www.cobo.com/) as the finality provider.
 
 The lifecycle of the `LiaBTC` token invoves minting when `aBTC` is submitted for staking and burning upon unstaking. When users stake `aBTC` via LISA, they receive `LiaBTC` at a 1:1 ratio.
 
 ## Rebase mechanism
 
-The rebasing mechanism is implemented via the "shares" concept. The protocol tracks and stores each user's share of the reserve. The token balance of a specific user is calculated according to the following equation.
+The rebasing nature of `LiaBTC` is implemented via the "shares" concept. The contract tracks and stores each user's share of an external reserve. By holding shares, users hold a portion of the total reserve. The reserve is tracked by the [`reserve`](#reserve) variable within the contract, which is updated externally, typically by the [`liabtc-mint-endpoint::rebase`][rebasef] function.
+
+The `LiaBTC` balance of a specific user is calculated according to the following equation.
 
 $$
 \textrm{User Balance} = \frac{\textrm{User Shares}}{\textrm{Total Shares}} \; \cdot \:  \textrm{Reserve}
@@ -18,31 +22,41 @@ Where:
 
 - **Reserve** is the current total value of `aBTC` staked, backed by the `BTC` staked at Babylon and their corresponding staking rewards which were converted to `BTC` and restaked.
 
-- **User Shares** represent the user's portion of the total reserve. Every time a user stakes `aBTC`, the equivalent value in shares is calculated and minted to the user's shares balance. Shares increase when users deposit `aBTC` and decrease when they redeem.
+- **User Shares** represent the user's portion of the total reserve. Every time a user stakes `aBTC`, the equivalent value in shares is calculated and added to the user's shares balance. Shares increase when users deposit `aBTC` and decrease when they redeem.
 
 - **Total Shares** is the sum of all shares held by all `LiaBTC` token holders.
 
-By holding shares, users hold a portion of the total reserve. If the reserve changes, each balance does as well and without involving explicit token transfer. Anyway, this rebase and shares mechanism is transparent from a token holder perspective rather the auto-adjustment of the balance.
+The above equation can be generalized for an arbitrary amount of shares
 
-The reserve in the contract it is tracked by the [`reserve`](#reserve) variable, which is updated externally, typically by the [`liabtc-mint-endpoint::rebase`][rebasef] function.
+$$
+\textrm{LiaBTC Tokens} = \frac{\textrm{Shares}}{\textrm{Total Shares}} \; \cdot \:  \textrm{Reserve},
+$$
+
+while the share-to-token conversion can also be deduced by the same equation:
+
+$$
+\textrm{Shares} = \frac{\textrm{LiaBTC Tokens}}{\textrm{Reserve}} \; \cdot \:  \textrm{Total Shares}.
+$$
+
+This is how [`get-shares-to-tokens`](#get-shares-to-tokens) and [`get-tokens-to-shares`](#get-tokens-to-shares) functions work.
 
 ## Balances
 
-The `LiaBTC` balance of each user, accessible via the [`get-balance`](#get-balance) function, is automatically adjusted on each rebase, without requiring a token transfer. In a scenario where the user do not perform any staking movements, their balance will increase over time as staking rewards are reinjected into the staking protocol.
+The `LiaBTC` balance of each user, accessible via the [`get-balance`](#get-balance) function, is automatically adjusted on each rebase, without involving an explicit token transfer. In a scenario where the user do not perform any staking movements, their balance will increase over time as staking rewards are reinjected into the staking protocol.
 
-On the other hand, the shares balance, which can be obtained through the [`get-share`](#get-share) function, accounts for the portion of the total `aBTC` reserve that belongs to the user. Shares behave like a regular fungible token: balances can only changes with transfers, mints or burns.
+On the other hand, the shares balance, which can be obtained through the [`get-share`](#get-share) function, accounts for the portion of the total `aBTC` reserve that belongs to the user. Shares behave like a regular fungible token, meaning that balances can only changes with transfers, mints or burns.
 
-Users can freely use `LiaBTC` and its public interface in the same way as they would with any other token.
+Users can freely use `LiaBTC` and its public interface just like any other token. The rebase and share mechanism is transparent from a `LiaBTC` token holder's perspective, with balance adjustments occurring automatically.
 
 ## Units
 
-Except for some specific cases, all interface functions' input and output amounts are in `LiaBTC` token units. Those special cases are for the functions:
+Except for some specific cases, all interface functions' input and output amounts are in `LiaBTC` token units. The exceptions are the following functions:
 
-- [`get-share`](#get-share): returns amount in shares.
+- [`get-share`](#get-share): returns an amount in shares.
 - [`get-shares-to-tokens`](#get-shares-to-tokens): receives shares and returns tokens.
 - [`get-tokens-to-shares`](#get-tokens-to-shares): receives tokens and returns shares.
 
-Both shares and tokens use the same number of decimals, defined by `token-decimals`.
+Both shares and tokens use the same number of decimals, defined by [`token-decimals`](#token-decimals).
 
 ## Features
 
@@ -50,7 +64,7 @@ Both shares and tokens use the same number of decimals, defined by `token-decima
 
 #### `transfer`
 
-Transfers `LiaBTC` from the `sender` to the `recipient`. For authorization, the specified `sender` must either be the `tx-sender` or the `contract-caller`. Uses the [`ft-transfer?`](https://docs.stacks.co/reference/functions#ft-transfer) Clarity function and the actual transferred assets are the shares.
+Transfers `LiaBTC` from the `sender` to the `recipient`. For authorization, the specified `sender` must either be the `tx-sender` or the `contract-caller`. Uses the [`ft-transfer?`](https://docs.stacks.co/reference/functions#ft-transfer) Clarity function, where the actual transferred assets are shares.
 
 ##### Parameters
 
