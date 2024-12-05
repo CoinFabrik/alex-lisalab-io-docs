@@ -32,7 +32,7 @@ $$
 \textrm{LiaBTC Tokens} = \frac{\textrm{Shares}}{\textrm{Total Shares}} \; \cdot \:  \textrm{Reserve},
 $$
 
-while the share-to-token conversion can also be deduced by the same equation:
+while the token-to-share conversion can also be deduced by the same equation:
 
 $$
 \textrm{Shares} = \frac{\textrm{LiaBTC Tokens}}{\textrm{Reserve}} \; \cdot \:  \textrm{Total Shares}.
