@@ -15,7 +15,7 @@ The rebasing nature of `LiaBTC` is implemented via the "shares" concept. The con
 The `LiaBTC` balance of a specific user is calculated according to the following equation.
 
 $$
-\textrm{User Balance} = \frac{\textrm{User Shares}}{\textrm{Total Shares}} \; \cdot \:  \textrm{Reserve}
+\begin{equation} \textrm{User Balance} = \frac{\textrm{User Shares}}{\textrm{Total Shares}} \; \cdot \:  \textrm{Reserve} \end{equation} 
 $$
 
 Where:
