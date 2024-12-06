@@ -15,7 +15,7 @@ The `token-vliabtc` contract can be used as a trustless wrapper that accepts `Li
 Internally, the `vLiaBTC` balance represents the user's share of the total `LiaBTC` held by the `token-vliabtc` contract (vaulted `LiaBTC`). This means that for a general user that holds `vLiaBTC`, the value in `LiaBTC` is given by the following equation:
 
 $$
-\begin{equation} \textrm{LiaBTC value} = \frac{\textrm{vLiaBTC Balance}}{\textrm{vLiaBTC Total Supply}} \; \cdot \; \textrm{Vaulted LiaBTC} \end{equation}
+\textrm{LiaBTC value} = \frac{\textrm{vLiaBTC Balance}}{\textrm{vLiaBTC Total Supply}} \; \cdot \; \textrm{Vaulted LiaBTC}
 $$
 
 Unlike some other DeFi protocols, the amount of `vLiaBTC` minted when wrapping does not directly correspond to the `LiaBTC` shares exchanged. However, both approaches are equivalent and achieve the same functional outcome. For a detailed explanation of this equivalence, see the [Appendix](#appendix).
@@ -233,27 +233,29 @@ Initial value is `u8`.
 
 ## Appendix
 
-The amount of `vLiaBTC` minted when wrapping does not directly correspond to the `LiaBTC` shares exchanged. In some other DeFi protocols, these two values are exactly the same. Why are these different approaches to wrapping equivalent?
+The amount of `vLiaBTC` minted during wrapping does not directly correspond to the `LiaBTC` shares exchanged. In some other DeFi protocols, these two values are exactly the same. Why are these different approaches to wrapping equivalent?
 
-To understand this equivalence, let's rewrite some of the terms in (1), which is pasted down here to facilitate the explanation:
-
-$$
-\textrm{LiaBTC value} = \frac{\textrm{vLiaBTC Balance}}{\textrm{vLiaBTC Total Supply}} \; \cdot \; \textrm{Vaulted LiaBTC}
-$$
-
-Consider the relationship between `LiaBTC` shares and tokens given by the Equation (1) of the [`token-liabtc`][eq1] document. Based on that, the **Vaulted LiaBTC** can be expressed as:
+To understand this, let's revisit the equation from the [How it works?](#how-it-works) section, pasted down here to facilitate the explanation:
 
 $$
-\textrm{Vaulted LiaBTC} = \frac{\textrm{Vaulted Shares}}{\textrm{Total Shares}} \; \cdot \:  \textrm{Reserve}.
+\begin{equation} \textrm{LiaBTC value} = \frac{\textrm{vLiaBTC Balance}}{\textrm{vLiaBTC Total Supply}} \; \cdot \; \textrm{Vaulted LiaBTC}. \end{equation}
 $$
 
-Similarly, we can think of the **LiaBTC value** as a fraction of the **Reserve** using a hypothetical shares term:
+This equation shows the **LiaBTC value** for a general user holding a specific **vLiaBTC Balance**.
+
+Now, consider the relationship between `LiaBTC` shares and tokens, given by [equation (1)][eq1] of the `token-liabtc` document. Using that equation, the **Vaulted LiaBTC** can be expressed as:
+
+$$
+\textrm{Vaulted LiaBTC} = \frac{\textrm{Vaulted Shares}}{\textrm{Total Shares}} \; \cdot \:  \textrm{Reserve},
+$$
+
+where the **Vaulted Shares** are the `LiaBTC` shares representation of the vaulted `LiaBTC`. Similarly, we can think of the **LiaBTC value** expressed as a fraction of the **Reserve** using a hypothetical shares term:
 
 $$
 \textrm{LiaBTC value} = \frac{\textrm{Shares}_h}{\textrm{Total Shares}} \; \cdot \:  \textrm{Reserve}.
 $$
 
-Assuming the **LiaBTC value** did not change from the time the user wrapped until now, the hypothetical shares _are_ the shares that represent the `LiaBTC` amount that the user had wrapped. So, from now on, we will refer them as **User Shares**. Replacing these expressions in (1) and cancelling the **Reserve** factor from both sides, we get:
+Assuming the **LiaBTC value** remain unchanged since the user wrapped their tokens, the hypothetical shares _are_ the shares representation of the `LiaBTC` amount that the user wrapped. So, from now on, we will refer them as **User Shares**, the `LiaBTC` shares that the user exchanged during the wrap operation. Replacing the expressions for **Vaulted LiaBTC** and **LiaBTC value** into equation (1) and cancelling the **Reserve** factor from both sides, we get:
 
 $$
 \frac{\textrm{User Shares}}{\textrm{Total Shares}} = \frac{\textrm{vLiaBTC Balance}}{\textrm{vLiaBTC Total Supply}} \; \cdot \; \frac{\textrm{Vaulted Shares}}{\textrm{Total Shares}}.
@@ -265,13 +267,15 @@ $$
 \begin{equation} \textrm{User Shares} = \frac{\textrm{vLiaBTC Balance}}{\textrm{vLiaBTC Total Supply}} \; \cdot \; \textrm{Vaulted Shares} \end{equation}
 $$
 
-as the general equation that relates the `LiaBTC` shares (which represent the `LiaBTC` amount that the user had initially wrapped) and the corresponding `vLiaBTC` balance.
+as the general equation that relates the `LiaBTC` shares (representing the `LiaBTC` amount that the user initially wrapped) and the corresponding `vLiaBTC` balance.
 
-In many DeFi protocols, the amount of wrapped tokens minted equals the rebasing token's shares. In such cases, the **Vaulted Shares** equal the total circulating supply of the wrapped token (**vLiaBTC Total Supply**), resulting in
+In many DeFi protocols, the amount of wrapped tokens minted equals the rebasing token's shares exchanged. In such cases, the **Vaulted Shares** equal the total circulating supply of the wrapped token (**vLiaBTC Total Supply**), simplifying the equation to:
 
 $$
 \textrm{User Shares} = \textrm{vLiaBTC Balance}.
 $$
+
+This scenario is a specific case of equation (2), showing that both approaches are functionally equivalent.
 
 [sip010]: https://github.com/stacksgov/sips/blob/main/sips/sip-010/sip-010-fungible-token-standard.md
 [liabtc]: token-liabtc.md
