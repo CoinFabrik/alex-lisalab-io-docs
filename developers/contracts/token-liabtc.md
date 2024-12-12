@@ -10,7 +10,7 @@ The lifecycle of the `LiaBTC` token invoves minting when `aBTC` is submitted for
 
 ## Rebase mechanism
 
-The rebasing nature of `LiaBTC` is implemented via the "shares" concept. The contract tracks and stores each user's share of an external reserve. By holding shares, users hold a portion of the total reserve. The reserve is tracked by the [`reserve`](#reserve) variable within the contract, which is updated externally, typically by the [`liabtc-mint-endpoint::rebase`][rebasef] function.
+The rebasing nature of `LiaBTC` is implemented via the "shares" concept. The contract tracks and stores each user's proportional share of an external reserve. By holding shares, users effectively hold a fraction of the total reserve. The reserve's value is tracked by the [`reserve`](#reserve) variable within the contract, which is updated externally, typically by the [`liabtc-mint-endpoint::rebase`][rebasef] function.
 
 The `LiaBTC` balance of a specific user is calculated according to the following equation.
 
@@ -20,13 +20,13 @@ $$
 
 Where:
 
-- **Reserve** is the current total value of `aBTC` staked, backed by the `BTC` staked at Babylon and their corresponding staking rewards which were converted to `BTC` and restaked.
+- **Reserve** is the current total amount of `aBTC` staked, backed by the `BTC` staked at Babylon and their corresponding staking rewards which were converted to `BTC` and restaked.
 
 - **User Shares** represent the user's portion of the total reserve. Every time a user stakes `aBTC`, the equivalent value in shares is calculated and added to the user's shares balance. Shares increase when users deposit `aBTC` and decrease when they redeem.
 
 - **Total Shares** is the sum of all shares held by all `LiaBTC` token holders.
 
-The above equation can be generalized for an arbitrary amount of shares
+The above equation can be generalized for an arbitrary amount of shares:
 
 $$
 \textrm{LiaBTC Tokens} = \frac{\textrm{Shares}}{\textrm{Total Shares}} \; \cdot \:  \textrm{Reserve},

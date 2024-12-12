@@ -11,7 +11,7 @@ The `liabtc-mint-endpoint` contract acts as single `aBTC` staker within the [`xl
 
 The mint operation consists of two main actions:
 
-- User transfers `aBTC` to be staked in the liquid pool.
+- User transfers `aBTC` to be staked in the liquid staking pool.
 - User receives `LiaBTC` tokens in exchange at a 1:1 ratio (1 `aBTC` = 1 `LiaBTC`).
 
 When a user mints `LiaBTC`, the underlying `aBTC` is transferred to the Staking Manager, which stores the funds, tracks the liquid staking status (including shares and stake balances) and emits an event.
@@ -41,16 +41,16 @@ User initiates the request to unstake a specific amount of `aBTC`. During this s
 
 Once the [`burn-delay`](#burn-delay) period (typically 1,000 Bitcoin blocks) has passed, the user or any other principal can finalize the request. On finalization:  
 
-- The corresponding `aBTC` is transferred from the registry to the requestor, completing the unstaking process.  
+- The corresponding `aBTC` is transferred from the registry to the requester, completing the unstaking process.  
 - The request status is updated to [`FINALIZED`](#finalized).  
 
 ### Revoke
 
-Burn requests can be revoked by the requestor at any time before it is finalized. When revoke:
+Burn requests can be revoked by the requester at any time before it is finalized. When revoke:
 
 - The corresponding `aBTC` is returned to the user.  
-- A `mint` operation is executed in the same transaction, restoring the user's original amount of `LiaBTC`.  
-- The request status is updated to `REVOKE`.  
+- A [`mint`](#mint) operation is executed in the same transaction, restoring the user's original amount of `LiaBTC`.  
+- The request status is updated to [`REVOKED`](#revoked).  
 
 ## Rebase
 
@@ -89,8 +89,7 @@ The `message` and `signature-packs` parameters serve as inputs to the [`xlink-st
 Initiates the burn procedure for a certain amount of `LiaBTC`. Several actions are performed:
 
 - `LiaBTC` amount is burned from the user wallet.
-- The amount of `aBTC` is unstaked from the Staking Manager.
-- The unstaked `aBTC` is transferred from the `xlink-staking` to the `liabtc-mint-endpoint` and then to the[`liabtc-mint-registry`][r] to be holded until finalization o revoke.
+- The same amount of `aBTC` is unstaked from the `xlink-staking` contract and transferred to the `liabtc-mint-endpoint`, which then transfers it to the [`liabtc-mint-registry`][r], where it is held until finalization or revocation.
 - A request with `PENDING` status is created on the registry.
 
 As with `mint`, the `message` and `signature-packs` parameters serve as inputs to the [`xlink-staking::unstake`][unstakef] function.
@@ -105,7 +104,7 @@ As with `mint`, the `message` and `signature-packs` parameters serve as inputs t
 
 #### `revoke-burn`
 
-Revokes a burn request. Only the requestor (`requested-by` field of the request) can call this function. The registry returns the funds back to user as in `finalize-request`, with the key difference that the [`mint`](#mint) function is invoked (with the user as `sender`) to restake the `aBTC` and mint the `LiaBTC` back to the user. Request status is updated to `REVOKED`.
+Revokes a burn request. Only the requester (`requested-by` field of the request) can call this function. The registry returns the funds back to user as in `finalize-request`, with the key difference that the [`mint`](#mint) function is invoked (with the user as `sender`) to restake the `aBTC` and mint the `LiaBTC` back to the user. Request status is updated to `REVOKED`.
 
 ##### Parameters
 
@@ -117,7 +116,7 @@ Revokes a burn request. Only the requestor (`requested-by` field of the request)
 
 #### `finalize-burn`
 
-Finalizes a burn request by transferring the `aBTC` from the registry to the user (`requested-by` field of the request). Request is set as `FINALIZED`. Anyone can call.
+Finalizes a burn request by transferring the `aBTC` from the registry to the user (`requested-by` field of the request). Request is set as `FINALIZED`. This function is permissionless and can be called by any user, even those who did not initiate the burn request.
 
 ##### Parameters
 
@@ -239,7 +238,7 @@ Checks if a given `principal` is eligible for minting under the current whitelis
 
 #### `validate-revoke-burn`
 
-Performs revoke burn validations and returns the corresponding request details. Within the contract, this function is solely called by the [`revoke-burn`](#revoke-burn) function. Validations encompass: burn is not paused, request exists, request has `PENDING` status and `sender` matches the `requested-by` field on the burn request (only the requestor can revoke).
+Performs revoke burn validations and returns the corresponding request details. Within the contract, this function is solely called by the [`revoke-burn`](#revoke-burn) function. Validations encompass: burn is not paused, request exists, request has `PENDING` status and `sender` matches the `requested-by` field on the burn request (only the requester can revoke).
 
 ##### Parameters
 

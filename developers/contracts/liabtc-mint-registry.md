@@ -82,7 +82,7 @@ Indicates the `request-id` of the last burn request created. This variable can o
 | ---- | -------------------------------------------------------------------------------------- |
 | Map  | `uint { requested-by: principal, amount: uint, requested-at: uint, status: (buff 1) }` |
 
-Map that stores the burn requests used by the [`liabtc-mint-endpoint`][mint].
+Map that stores the burn requests, typically used by the [`liabtc-mint-endpoint`][mint].
 
 ### Relevant constants
 
