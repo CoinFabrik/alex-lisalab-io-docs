@@ -319,4 +319,4 @@ Initial value is `u8`.
 [mint]: liabtc-mint-endpoint.md
 [rebasef]: liabtc-mint-endpoint.md#rebase-1
 [sip010]: https://github.com/stacksgov/sips/blob/main/sips/sip-010/sip-010-fungible-token-standard.md
-[sm]: xlink-staking.md
+[sm]: https://docs.xlink.network/developers/contracts/xlink-staking

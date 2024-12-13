@@ -393,9 +393,9 @@ Burn request revoked status.
 | `err-request-finalized-or-revoked` | `(err u7007)` |
 | `err-not-whitelisted`              | `(err u7008)` |
 
-[sm]: xlink-staking.md
-[stakef]: xlink-staking.md#stake
-[unstakef]: xlink-staking.md#unstake
+[sm]: https://docs.xlink.network/developers/contracts/xlink-staking
+[stakef]: https://docs.xlink.network/developers/contracts/xlink-staking#stake
+[unstakef]: https://docs.xlink.network/developers/contracts/xlink-staking#unstake
 [r]: liabtc-mint-registry.md
 [liabtc]: token-liabtc.md
 
