@@ -92,7 +92,7 @@ Initiates the burn procedure for a certain amount of `LiaBTC`. Several actions a
 - The same amount of `aBTC` is unstaked from the `xlink-staking` contract and transferred to the `liabtc-mint-endpoint`, which then transfers it to the [`liabtc-mint-registry`][r], where it is held until finalization or revocation.
 - A request with `PENDING` status is created on the registry.
 
-As with `mint`, the `message` and `signature-packs` parameters serve as inputs to the [`xlink-staking::unstake`][unstakef] function.
+As with [`mint`](#mint-1), the `message` and `signature-packs` parameters serve as inputs to the [`xlink-staking::unstake`][unstakef] function.
 
 ##### Parameters
 
@@ -104,7 +104,7 @@ As with `mint`, the `message` and `signature-packs` parameters serve as inputs t
 
 #### `revoke-burn`
 
-Revokes a burn request. Only the requester (`requested-by` field of the request) can call this function. The registry returns the funds back to user as in `finalize-request`, with the key difference that the [`mint`](#mint) function is invoked (with the user as `sender`) to restake the `aBTC` and mint the `LiaBTC` back to the user. Request status is updated to `REVOKED`.
+Revokes a burn request. Only the requester (`requested-by` field of the request) can call this function. The registry returns the funds back to user as in `finalize-request`, with the key difference that the [`mint`](#mint-1) function is invoked (with the user as `sender`) to restake the `aBTC` and mint the `LiaBTC` back to the user. Request status is updated to `REVOKED`.
 
 ##### Parameters
 
@@ -218,7 +218,7 @@ Checks if a given `principal` is eligible for minting under the current whitelis
 
 #### `validate-mint`
 
-`xlink-staking::validate-stake` façade for handling `aBTC` staking. Within the contract, this function is solely called by the [`mint`](#mint) function. Throws if mint is paused or the `sender` is not whitelisted (when applicable).
+`xlink-staking::validate-stake` façade for handling `aBTC` staking. Within the contract, this function is solely called by the [`mint`](#mint-1) function. Throws if mint is paused or the `sender` is not whitelisted (when applicable).
 
 ##### Parameters
 
