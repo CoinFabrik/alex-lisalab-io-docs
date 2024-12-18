@@ -1,5 +1,8 @@
 # token-liabtc
 
+- Location: `xlink-dao/contracts/liabtc/token-liabtc.clar`
+- [Deployed contract](https://explorer.stxer.xyz/txid/SP673Z4BPB4R73359K9HE55F2X91V5BJTN5SXZ5T.token-liabtc)
+
 ## What is LiaBTC?
 
 The `LiaBTC` token is a [SIP-010][sip010] compliant rebasing token that represents staked `aBTC`. The underlying Bitcoin backing these `aBTC` tokens is staked externally.
@@ -15,7 +18,7 @@ The rebasing nature of `LiaBTC` is implemented via the "shares" concept. The con
 The `LiaBTC` balance of a specific user is calculated according to the following equation.
 
 $$
-\begin{equation} \textrm{User Balance} = \frac{\textrm{User Shares}}{\textrm{Total Shares}} \; \cdot \:  \textrm{Reserve} \end{equation} 
+\begin{equation} \textrm{User Balance} = \frac{\textrm{User Shares}}{\textrm{Total Shares}} \; \cdot \:  \textrm{Reserve} \end{equation}
 $$
 
 Where:
@@ -305,9 +308,7 @@ Initial value is `u8`.
 
 ## Contract calls
 
-<!-- TODO: LiaBTC DAO will switch to LISA's DAO when going live. -->
-
-- `'SP2XD7417HGPRTREMKF748VNEQPDRR0RMANB7X1NK.executor-dao`: This contract is exclusively called by the [`is-dao-or-extension`](#is-dao-or-extension) function for authorizing governance operations.
+- `'SM26NBC8SFHNW4P1Y4DFH27974P56WN86C92HPEHH.lisa-dao`: This contract is exclusively called by the [`is-dao-or-extension`](#is-dao-or-extension) function for authorizing governance operations.
 
 ## Errors
 

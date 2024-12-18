@@ -1,7 +1,7 @@
 # liabtc-mint-registry
 
 - Location: `xlink-dao/contracts/liabtc/liabtc-mint-registry.clar`
-<!-- - [Deployed contract](link-to-explorer) -->
+- [Deployed contract](https://explorer.stxer.xyz/txid/SP673Z4BPB4R73359K9HE55F2X91V5BJTN5SXZ5T.liabtc-mint-registry)
 
 The `liabtc-mint-registry` is the data and treasury counterpart to the [`liabtc-mint-endpoint`][mint] contract. It manages the storage of burn requests data and serves as the `aBTC` treasury during burn operations.
 
@@ -114,9 +114,7 @@ Burn request revoked status.
 
 - `<sip-010-trait>`: Interaction with potentially any contract implementing the [official SIP-010][sip010] occurs when the [`transfer`](#transfer) function is called.
 
-<!-- TODO: LiaBTC DAO will switch to LISA's DAO when going live. -->
-
-- `'SP2XD7417HGPRTREMKF748VNEQPDRR0RMANB7X1NK.executor-dao`: This contract is exclusively called by the [`is-dao-or-extension`](#is-dao-or-extension) function for authorizing governance operations.
+- `'SM26NBC8SFHNW4P1Y4DFH27974P56WN86C92HPEHH.lisa-dao`: This contract is exclusively called by the [`is-dao-or-extension`](#is-dao-or-extension) function for authorizing governance operations.
 
 ## Errors
 

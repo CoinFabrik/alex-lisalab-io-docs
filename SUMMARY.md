@@ -76,7 +76,7 @@
 
 * [LISA Supported Network](developers/lisa-supported-network.md)
 * [LISA Media Kits](developers/lisa-media-kits.md)
-* Contracts
+* [Contracts](developers/contracts/README.md)
   * [liabtc-mint-endpoint](developers/contracts/liabtc-mint-endpoint.md)
   * [liabtc-mint-registry](developers/contracts/liabtc-mint-registry.md)
   * [token-liabtc](developers/contracts/token-liabtc.md)

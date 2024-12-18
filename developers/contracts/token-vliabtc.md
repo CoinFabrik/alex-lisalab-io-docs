@@ -1,5 +1,8 @@
 # token-vliabtc
 
+- Location: `xlink-dao/contracts/liabtc/token-vliabtc.clar`
+- [Deployed contract](https://explorer.stxer.xyz/txid/SP673Z4BPB4R73359K9HE55F2X91V5BJTN5SXZ5T.token-vliabtc)
+
 ## What is vLiaBTC?
 
 The `vLiaBTC` token is a [SIP-010][sip010] compliant value-accruing token, designed as a non-rebasing wrapper for `LiaBTC`.
@@ -221,9 +224,7 @@ Initial value is `u8`.
 
 - [`token-liabtc`][liabtc]: Core external calls are made to perform `LiaBTC` transfers when wrapping/unwrapping and to retrieve the balance of `LiaBTC` held by the `token-vliabtc` contract (vaulted `LiaBTC`).
 
-<!-- TODO: LiaBTC DAO will switch to LISA's DAO when going live. -->
-
-- `'SP2XD7417HGPRTREMKF748VNEQPDRR0RMANB7X1NK.executor-dao`: This contract is exclusively called by the [`is-dao-or-extension`](#is-dao-or-extension) function for authorizing governance operations.
+- `'SM26NBC8SFHNW4P1Y4DFH27974P56WN86C92HPEHH.lisa-dao`: This contract is exclusively called by the [`is-dao-or-extension`](#is-dao-or-extension) function for authorizing governance operations.
 
 ## Errors
 

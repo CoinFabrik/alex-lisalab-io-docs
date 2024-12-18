@@ -1,7 +1,7 @@
 # liabtc-mint-endpoint
 
 - Location: `xlink-dao/contracts/liabtc/liabtc-mint-endpoint.clar`
-<!-- - [Deployed contract](link-to-explorer) -->
+- [Deployed contract](https://explorer.stxer.xyz/txid/SP673Z4BPB4R73359K9HE55F2X91V5BJTN5SXZ5T.liabtc-mint-endpoint)
 
 Façade for [`xlink-staking`][sm] contract designed to handle the lifecycle of the `LiaBTC` rebasing token (mint, burn and rebase operations).
 
@@ -31,26 +31,26 @@ The burn operation (or unstake) allows users to withdraw their `aBTC` from the l
 
 ### Request
 
-User initiates the request to unstake a specific amount of `aBTC`. During this step:  
+User initiates the request to unstake a specific amount of `aBTC`. During this step:
 
-- That same amount of `LiaBTC` tokens are burned from the user wallet.  
-- A burn request is created in the registry with a unique `request-id` and a [`PENDING`](#pending) status.  
+- That same amount of `LiaBTC` tokens are burned from the user wallet.
+- A burn request is created in the registry with a unique `request-id` and a [`PENDING`](#pending) status.
 - The `aBTC` are sent from the Staking Manager to the registry, which will hold the funds until the request is either finalized or revoked.
 
 ### Finalize
 
-Once the [`burn-delay`](#burn-delay) period (typically 1,000 Bitcoin blocks) has passed, the user or any other principal can finalize the request. On finalization:  
+Once the [`burn-delay`](#burn-delay) period (typically 1,000 Bitcoin blocks) has passed, the user or any other principal can finalize the request. On finalization:
 
-- The corresponding `aBTC` is transferred from the registry to the requester, completing the unstaking process.  
-- The request status is updated to [`FINALIZED`](#finalized).  
+- The corresponding `aBTC` is transferred from the registry to the requester, completing the unstaking process.
+- The request status is updated to [`FINALIZED`](#finalized).
 
 ### Revoke
 
 Burn requests can be revoked by the requester at any time before it is finalized. When revoke:
 
-- The corresponding `aBTC` is returned to the user.  
-- A [`mint`](#mint) operation is executed in the same transaction, restoring the user's original amount of `LiaBTC`.  
-- The request status is updated to [`REVOKED`](#revoked).  
+- The corresponding `aBTC` is returned to the user.
+- A [`mint`](#mint) operation is executed in the same transaction, restoring the user's original amount of `LiaBTC`.
+- The request status is updated to [`REVOKED`](#revoked).
 
 ## Rebase
 
@@ -380,8 +380,7 @@ Burn request revoked status.
 
 - `'SP2XD7417HGPRTREMKF748VNEQPDRR0RMANB7X1NK.token-abtc`: As the underlying token that backs `LiaBTC`, this contract is called for transfers and to specify the token being staked in the Staking Manager.
 
-<!-- TODO: LiaBTC DAO will switch to LISA's DAO when going live. -->
-- `'SP2XD7417HGPRTREMKF748VNEQPDRR0RMANB7X1NK.executor-dao`: This contract is exclusively called by the [`is-dao-or-extension`](#is-dao-or-extension) function for authorizing governance operations.
+- `'SM26NBC8SFHNW4P1Y4DFH27974P56WN86C92HPEHH.lisa-dao`: This contract is exclusively called by the [`is-dao-or-extension`](#is-dao-or-extension) function for authorizing governance operations.
 
 ## Errors
 
