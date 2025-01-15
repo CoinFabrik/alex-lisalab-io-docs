@@ -74,6 +74,7 @@
 
 ## Developers
 
+* [List with LISA!](developers/list-with-lisa.md)
 * [LISA Supported Network](developers/lisa-supported-network.md)
 * [LISA Media Kits](developers/lisa-media-kits.md)
 * [Contracts](developers/contracts/README.md)

@@ -26,9 +26,15 @@ The redemption steps are as follows:
 
 #### **How Long to Wait for Withdrawal and do I still earn Points?**
 
-If there is enough STX within the unstacking balance, you will be able to redeem your STX instantly.&#x20;
+Under normal circumstances, redemption requests can take anywhere from 1 to 14 days until the next stacking cycle is completed, after which you can claim your STX using the Claim dashboard.
 
-However, under normal circumstances, redemption requests can take anywhere from 1 to 14 days until the next stacking cycle is completed, after which you can claim your STX using the Claim dashboard.
+If there is enough STX within the unstacking balance, you will be able to redeem your STX instantly.
+
+{% hint style="info" %}
+The instant redemption is funded by new STX deposited into the stacking vault. If there isn't enough newly deposited STX by the time you make a stack-out request, you need to wait for another cycle. 
+
+E.g.: If cycle #N has 200,000 STX newly stacked, the same 200,000 STX can be used by anyone who wishes to stack out immediately.
+{% endhint %}
 
 **Easier way to put it:**
 
